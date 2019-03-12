@@ -1,15 +1,43 @@
-# Attributes of the server this bot will run on
-SERVER_HOST = ''
-SERVER_PORT = 8888
+import configparser
 
-# Attributes of the IRC connection
-IRC_SERVER = 'chat.freenode.net'
-IRC_CHANNEL = '#wfbottest'
-IRC_NICK = 'WfTestBot'
+class config:
+    def read(self):
+        self.config = configparser.ConfigParser()
+        self.config.read(self.configfile)
+        self.widelands = self.config._sections
+        self.widelands['server']['ssl'] = self.config.getboolean('server', 'ssl')
+        self.widelands['server']['sasl'] = self.config.getboolean('server', 'sasl')
+        self.widelands['server']['port'] = self.config.getint('server', 'port')
+        self.widelands['server']['retry'] = self.config.getint('server', 'retry')
+        self.widelands['nickserv']['replay'] = self.config.getboolean('nickserv', 'replay')
+        self.widelands['admin']['debug'] = self.config.getboolean('admin', 'debug')
+        self.widelands['ping']['interval'] = self.config.getint('ping', 'interval')
+        self.widelands['ping']['timeout'] = self.config.getint('ping', 'timeout')
+        self.widelands['ping']['pending'] = self.config.getboolean('ping', 'pending')
+        self.widelands['ping']['use'] = self.config.getboolean('ping', 'use')
+        self.widelands['webhook']['port'] = self.config.getint('webhook', 'port')
+        self.widelands['webhook']['start'] = self.config.getboolean('webhook', 'start')
+        self.channels = self.widelands['channel']['liste'].split(', ')
+        self.events = self.widelands['channel']['event'].split(', ')
+        self.trigger = "{}, ".format(self.widelands['nickserv']['username'])
 
-# Set the password for your registered empty, leave empty if not applicable
-# Note: freenode(and potentially other servers) want password to be of the form
-# "nick:pass", so for ex. IRC_PASS = 'WfTestBot:mypass123'
-IRC_PASS = ''
+    def write(self):
+        with open(self.configfile, 'w') as configfile:
+            self.config.write(configfile)
 
-IRC_PORT = 6667
+    def update(self, section, option, value):
+        if not section in self.config.sections():
+            self.config.add_section(section)
+        if isinstance(value, list):
+            value = ', '.join(value)
+        self.config.set(section, option, str(value))
+        self.widelands[section][option] = value
+        self.write()
+
+    def remove(self, section, option):
+        self.config.set(section, option, '')
+        self.widelands[section][option] = ''
+        self.write()
+
+    def ask(self, section, option):
+        return self.config.get(section, option)
