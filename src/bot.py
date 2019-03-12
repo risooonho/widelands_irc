@@ -37,7 +37,7 @@ class MyHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(bytes('OK', 'utf-8'))
 
-        events.handle_event(irc, event_type, json.loads(data.decode()))
+        events.handle_event(irc, event_type, json.loads(data))
         return
 
 def worker():
