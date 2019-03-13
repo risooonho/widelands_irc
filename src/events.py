@@ -63,7 +63,7 @@ def handle_forward_push(irc, data):
     author = colorize(data['pusher']['name'], 'bold', 'irc')
 
     num_commits = len(data['commits'])
-    num_commits = "{} commit{}".format(str(num_commits), 's' if num_commits > 1 else '')
+    num_commits = "{} commit{}".format(num_commits, 's' if num_commits > 1 else '')
 
     num_commits = colorize(num_commits, 'bold-teal', 'irc')
 
