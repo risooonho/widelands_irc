@@ -13,7 +13,6 @@ from colors import colorize
 from trigger import trigger
 from config import config
 
-locale.setlocale(locale.LC_TIME, "de_DE.utf-8")
 
 class IrcConnection(trigger, config):
     def __init__(self, configfile):
@@ -32,6 +31,7 @@ class IrcConnection(trigger, config):
         self.lock = threading.Lock()
         self.quit_loop = False
         self.time_format = "%d.%m.%Y %H:%M:%S"
+        locale.setlocale(locale.LC_TIME, self.widelands['locale']['lang'])
 
     def connect_server(self):
         print(colorize("Connecting to {}:{}".format(self.widelands['server']['address'],
