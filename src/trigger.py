@@ -1,7 +1,6 @@
 import time
 import sys
 import re
-import locale
 import os
 
 from distutils.util import strtobool
