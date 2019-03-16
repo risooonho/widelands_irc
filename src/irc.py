@@ -261,7 +261,8 @@ class IrcConnection(trigger, config):
         while not self.quit_loop:
             try:
                 to_read, _, _ = select.select([self.connection], [], [], 1)
-            except select.error:
+            except select.error as err:
+                print(colorize("Select Error: {}\n\tReconnect...".format(err), 'red', 'shell'))
                 self.reconnect()
                 continue
 
@@ -269,6 +270,8 @@ class IrcConnection(trigger, config):
                 self.try_ping()
 
             if self.last_ping + self.widelands['ping']['timeout'] < time.time():
+                print(colorize("Ping timeout after {} seconds. Reconnect...".format(
+                    self.widelands['ping']['timeout']), 'red', 'shell'))
                 self.reconnect()
                 continue
 
