@@ -81,6 +81,10 @@ class trigger:
                         else:
                             self.send_message('{} ist mir nicht bekannt!'.format(content[3]), self.target)
 
+        if content[1] == 'reconnect':
+            self.send_message('Try to reconnect', self.target)
+            self.reconnect()
+
         if content[1] == 'event':
             if len(content) == 2:
                 if len(self.events) > 0:
