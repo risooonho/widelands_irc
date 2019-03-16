@@ -60,7 +60,6 @@ class IrcConnection(trigger, config):
         self.last_ping = time.time()
         self.start_time = time.time()
         self.update('admin', 'debug', False)
-        self.process_input()
 
         if self.widelands['server']['sasl'] and self.widelands['server']['ssl']:
             self.post_string('CAP LS 302')
@@ -268,7 +267,7 @@ class IrcConnection(trigger, config):
                 continue
 
             if to_read:
-                r = self.process_input()
+                self.process_input()
 
             with self.lock:
                 while not self.queue.empty():
