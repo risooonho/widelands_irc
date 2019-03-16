@@ -60,6 +60,7 @@ class IrcConnection(trigger, config):
 
         self.last_ping = time.time()
         self.start_time = time.time()
+
         if self.widelands['admin']['debug']:
             self.is_debug = True
             self.update('admin', 'debug', False)
@@ -74,9 +75,6 @@ class IrcConnection(trigger, config):
         self.post_string('NICK {}'.format(self.widelands['nickserv']['username']))
         self.post_string('USER {} {} {} :{}'.format(self.widelands['nickserv']['username'],
             '0', '*', self.widelands['server']['realname']))
-
-        if self.widelands['server']['sasl'] and self.widelands['server']['ssl']:
-            self.post_string('CAP REQ :sasl')
 
     def reconnect(self):
         self.connection.shutdown(2)
@@ -150,8 +148,24 @@ class IrcConnection(trigger, config):
     def process_line(self, line):
         if len(line) > 0:
             line = line.rstrip('\r\n')
+            print('{}: {}'.format(colorize("{} {}".format(time.strftime(self.time_format),
+                self.widelands['server']['address']), 'green', 'shell'), line))
             self.format_content(line)
+
+            if self.start_time + 10 < time.time() \
+                    and self.widelands['admin']['debug'] \
+                    and self.command not in self.command_list:
+                self.send_message(line)
+
             if self.widelands['server']['sasl'] and self.widelands['server']['ssl']:
+                if self.command == 'CAP' and 'LS' in self.target and not 'sasl' in self.content:
+                    self.update('server', 'sasl', False)
+                    self.reconnect()
+                    return
+
+                if self.command == 'CAP' and 'sasl' in self.content and 'LS' in self.target:
+                    self.post_string('CAP REQ :sasl')
+
                 if self.command == 'CAP' and self.target == '{} ACK'.format(self.widelands['nickserv']['username']):
                     self.post_string('AUTHENTICATE PLAIN')
 
@@ -205,18 +219,6 @@ class IrcConnection(trigger, config):
 
             if self.command == 'NOTICE' and not re.search('\x01$', self.content):
                 self.trigger_notice()
-
-            if self.start_time + 4 < time.time():
-                if not self.widelands['admin']['debug'] and self.command not in self.command_list:
-                    print("Hostname: {}\nCommand: {}\nTarget: {}\nMessage: {}".format(
-                        self.hostname, self.command, self.target, self.content))
-
-                if self.widelands['admin']['debug'] and self.command not in self.command_list:
-                    self.send_message(line)
-
-            print('{}: {}'.format(colorize("{} {}".format(time.strftime(self.time_format),
-                self.widelands['server']['address']), 'green', 'shell'), line))
-
 
     def process_input(self):
         data = self.connection.recv(4096)
