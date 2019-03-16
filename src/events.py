@@ -175,6 +175,17 @@ def handle_status_event(irc, data):
 
     print('Status event')
 
+def handle_watch_event(irc, data):
+    if data['action'] == 'started':
+        message = colorize('has been starred by', 'bold-green', 'irc')
+    else:
+        print('Watch event: {}'.format(data['action']))
+    repo = fmt_repo(data)
+    sender = data['sender']['login']
+    irc.schedule_message('{} {} {}'.format(repo, message, sender))
+
+    print('Watch event')
+
 def handle_ping_event(irc, data):
     print("Ping event")
 
@@ -189,6 +200,8 @@ def handle_event(irc, event, data):
         handle_issue(irc, data)
     elif event == 'status':
         handle_status_event(irc, data)
+    elif event == 'watch':
+        handle_watch_event(irc, data)
     else:
         print("Unknown event type: " + event)
     print('handle_event: {}'.format(event))
