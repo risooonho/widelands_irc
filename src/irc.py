@@ -120,14 +120,9 @@ class IrcConnection(trigger, config):
         if len(arguments) == 1:
             self.command = arguments[0]
             self.target = None
-        elif len(arguments) == 2:
+        else:
             self.command = arguments[0]
             self.target = arguments[1]
-        else:
-            # sollte nie passieren
-            self.command = None
-            self.target = None
-            print("format_content_3: {}:{}".format(len(arguments), arguments))
 
         self.content = text
         if self.widelands['admin']['debug']:
