@@ -29,6 +29,7 @@ class IrcConnection(trigger, config):
         self.rejoin_chan = None
         self.queue = queue.Queue()
         self.lock = threading.Lock()
+        self.is_debug = False
         self.quit_loop = False
         self.time_format = "%d.%m.%Y %H:%M:%S"
         locale.setlocale(locale.LC_TIME, self.widelands['locale']['lang'])
@@ -59,7 +60,9 @@ class IrcConnection(trigger, config):
 
         self.last_ping = time.time()
         self.start_time = time.time()
-        self.update('admin', 'debug', False)
+        if self.widelands['admin']['debug']:
+            self.is_debug = True
+            self.update('admin', 'debug', False)
 
         if self.widelands['server']['sasl'] and self.widelands['server']['ssl']:
             self.post_string('CAP LS 302')
@@ -167,6 +170,9 @@ class IrcConnection(trigger, config):
                     self.reconnect()
 
             if self.command == '376':
+                if self.is_debug:
+                    self.is_debug = False
+                    self.update('admin', 'debug', True)
                 if len(self.channels) > 0:
                     for channel in self.channels:
                         self.post_string('JOIN {}'.format(channel))
