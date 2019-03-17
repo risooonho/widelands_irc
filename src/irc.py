@@ -217,17 +217,18 @@ class IrcConnection(trigger, config):
 
     def process_input(self):
         data = self.connection.recv(4096)
-        if not data or data == b'':
+        if not data:
             return
 
         self.buffer += data.decode('utf-8')
 
         lines = self.buffer.split('\n')
         if self.buffer[-1] == '\n':
-            lines += ['']
+            lines.append('')
 
         for line in lines[:-1]:
-            self.process_line(line)
+            if line:
+                self.process_line(line)
 
         self.buffer = lines[-1]
 
