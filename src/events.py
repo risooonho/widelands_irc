@@ -147,6 +147,7 @@ def handle_status_event(irc, data):
     elif data['state'] == 'failure':
         color = 'bold-red'
     elif data['state'] == 'pending':
+        print('Status: {}'.format(data['state']))
         return
         color = 'bold-teal'
     else:
@@ -163,7 +164,10 @@ def handle_status_event(irc, data):
     change_url = 'https://github.com/{}/compare/{}...{}'.format(repo_name, befor_id, after_id)
     change = colorize('Change view:', 'teal', 'irc')
     build = colorize('Build details:', 'teal', 'irc')
-    commit_msg = colorize(data['commit']['commit']['message'], 'green', 'irc')
+    message = data['commit']['commit']['message'].replace('\n', ' ')
+    message = message[:MAX_COMMIT_LEN] \
+            + ('..' if len(message) > MAX_COMMIT_LEN else '')
+    commit_msg = colorize(message, 'green', 'irc')
     branch = colorize(data['branches'][0]['name'], 'bold-blue', 'irc')
 
     irc.schedule_message('{} {} on {}: {}'
