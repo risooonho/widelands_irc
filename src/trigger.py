@@ -12,32 +12,33 @@ class trigger:
             self.send_message('NICKSERV: {}'.format(self.content))
 
     def trigger_ctcp(self):
-        if self.content.find('\x01ACTION') == 0 and re.search('\x01$', self.content, re.IGNORECASE):
-            self.send_notice('\x01ACTION {}\x01'.format(' '.join(str(i) for i in self.content.replace('\x01', '').split()[1:])), self.user)
+        content = self.content.split()
+        if content[0] == 'ACTION':
+            self.send_notice('\x01ACTION {}\x01'.format(' '.join(str(i) for i in content[1:])), self.user)
 
-        if self.content.find('\x01VERSION\x01') == 0:
+        if content[0] == 'VERSION':
             self.send_notice('\x01VERSION {}:{}:{}\x01'.format(self.widelands['nickserv']['username'], self.version, os.uname()[0]), self.user)
 
-        if self.content.find('\x01TIME\x01') == 0:
+        if content[0] == 'TIME':
             self.send_notice('\x01TIME {}\x01'.format(time.strftime("%A, %d. %B %Y %H:%M:%S %Z")), self.user)
 
-        if self.content.find('\x01USERINFO\x01') == 0:
+        if content[0] == 'USERINFO':
             self.send_notice('\x01USERINFO Ich bin ein automatisch denkendes Wesen, auch bekannt als Bot!\x01', self.user)
 
-        if self.content.find('\x01CLIENTINFO\x01') == 0:
+        if content[0] == 'CLIENTINFO':
             self.send_notice('\x01CLIENTINFP ACTION CLIENTINFO FINGER PING SOURCE TIME URL USERINFO VERSION\x01', self.user)
 
-        if self.content.find('\x01URL\x01') == 0:
+        if content[0] == 'URL':
             self.send_notice('\x01URL Frag den janus im freenode\x01', self.user)
 
-        if self.content.find('\x01SOURCE\x01') == 0:
+        if content[0] == 'SOURCE':
             self.send_notice('\x01SOURCE Frag den janus im freenode\x01', self.user)
 
-        if self.content.find('\x01PING') == 0 and re.search('\x01$', self.content, re.IGNORECASE):
-            if len(self.content.split()) > 1:
-                self.send_notice('\x01PING {}\x01'.format(' '.join(str(i) for i in self.content.replace('\x01', '').split()[1:])), self.user)
+        if content[0] == 'PING':
+            if len(content) > 1:
+                self.send_notice('\x01PING {}\x01'.format(' '.join(str(i) for i in content[1:])), self.user)
 
-        if self.content.find('\x01FINGER\x01') == 0:
+        if content[0] == 'FINGER':
             self.send_notice('\x01FINGER Du nicht nehmen Kerze! You don\'t take candle!\x01', self.user)
 
     def trigger_admin(self):

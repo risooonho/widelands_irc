@@ -206,14 +206,15 @@ class IrcConnection(trigger, config):
                 self.post_string('JOIN {}'.format(self.rejoin_chan))
                 self.rejoin_chan = None
 
-            if re.search('^\x01', self.content) and re.search('\x01$', self.content):
-                self.trigger_ctcp()
-
-            if self.command == 'PRIVMSG' and not re.search('\x01$', self.content):
+            if self.command == 'PRIVMSG' and '\x01' not in self.content:
                 self.trigger_privmsg()
 
-            if self.command == 'NOTICE' and not re.search('\x01$', self.content):
+            if self.command == 'NOTICE' and '\x01' not in self.content:
                 self.trigger_notice()
+
+            if self.content.startswith('\x01') and self.content.endswith('\x01'):
+                self.content = self.content.strip('\x01')
+                self.trigger_ctcp()
 
     def process_input(self):
         data = self.connection.recv(4096)
