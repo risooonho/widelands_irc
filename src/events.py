@@ -17,7 +17,7 @@ MAX_COMMIT_LEN = 70
 def fmt_commit(cmt):
     hsh = colorize(cmt['id'][:10], 'teal', 'irc')
     author = colorize(cmt['author']['name'], 'bold-green', 'irc')
-    message = cmt['message']
+    message = cmt['message'].replace('\n', ' ')
     message = message[:MAX_COMMIT_LEN] \
             + ('..' if len(message) > MAX_COMMIT_LEN else '')
 
