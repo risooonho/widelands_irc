@@ -166,7 +166,8 @@ def handle_status_event(irc, data):
     commit_id = colorize(after_id, 'bold', 'irc')
     desc = colorize(data['description'], color, 'irc')
     target_url = data['target_url'].split('?', 1)[0]
-    change_url = 'https://github.com/{}/compare/{}...{}'.format(repo_name, befor_id, after_id)
+    change_url = short_gh_link('https://github.com/{}/compare/{}...{}'
+            .format(repo_name, befor_id, after_id))
     change = colorize('Change view:', 'teal', 'irc')
     build = colorize('Build details:', 'teal', 'irc')
     message = fmt_message(data['commit']['commit']['message'])
@@ -176,7 +177,7 @@ def handle_status_event(irc, data):
     irc.schedule_message('{} {} on {}: {}'
             .format(repo, commit_id, branch, desc))
     irc.schedule_message('{} {} {}'
-            .format(change, commit_msg, short_gh_link(change_url)))
+            .format(change, commit_msg, change_url))
     irc.schedule_message('{} {}'
             .format(build, target_url))
 
