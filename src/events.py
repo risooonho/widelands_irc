@@ -17,11 +17,16 @@ MAX_COMMIT_LEN = 70
 def fmt_commit(cmt):
     hsh = colorize(cmt['id'][:10], 'teal', 'irc')
     author = colorize(cmt['author']['name'], 'bold-green', 'irc')
-    message = cmt['message'].replace('\n', ' ')
+    message = fmt_message(cmt['message'])
+
+    return '{} {}: {}'.format(hsh, author, message)
+
+def fmt_message(message):
+    message = message.replace('\n', ' ')
     message = message[:MAX_COMMIT_LEN] \
             + ('..' if len(message) > MAX_COMMIT_LEN else '')
 
-    return '{} {}: {}'.format(hsh, author, message)
+    return message
 
 def fmt_last_commits(data):
     commits = list(map(fmt_commit, data['commits']))
@@ -164,9 +169,7 @@ def handle_status_event(irc, data):
     change_url = 'https://github.com/{}/compare/{}...{}'.format(repo_name, befor_id, after_id)
     change = colorize('Change view:', 'teal', 'irc')
     build = colorize('Build details:', 'teal', 'irc')
-    message = data['commit']['commit']['message'].replace('\n', ' ')
-    message = message[:MAX_COMMIT_LEN] \
-            + ('..' if len(message) > MAX_COMMIT_LEN else '')
+    message = fmt_message(data['commit']['commit']['message'])
     commit_msg = colorize(message, 'green', 'irc')
     branch = colorize(data['branches'][0]['name'], 'bold-blue', 'irc')
 
