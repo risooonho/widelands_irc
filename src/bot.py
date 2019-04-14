@@ -35,9 +35,11 @@ class MyHandler(BaseHTTPRequestHandler):
             data = data.decode()
 
         if irc.widelands['webhook']['secret'] and self.headers['x-hub-signature']:
-            github_signature = self.headers['x-hub-signature'].split('=')[1]
-            verify_signature = _generate_signature(data)
-            if github_signature != verify_signature:
+            elements = self.headers['x-hub-signature'].split('=')
+            github_hash_algo = elements[0]
+            github_signature = elements[1]
+            verify_signature = _generate_signature(data, github_hash_algo)
+            if github_signature not in verify_signature:
                 return
 
         self.send_response(200)
@@ -53,11 +55,11 @@ def worker():
 
 irc = IrcConnection('src/config.ini')
 
-def _generate_signature(data):
+def _generate_signature(data, hash_algo):
     key = irc.widelands['webhook']['secret']
     key_bytes= bytes(key , 'utf-8')
     data_bytes = bytes(data, 'utf-8')
-    return hmac.new(key_bytes, data_bytes , hashlib.sha1).hexdigest()
+    return hmac.new(key_bytes, data_bytes, digestmod=hash_algo).hexdigest()
 
 t = threading.Thread(target=worker)
 t.start()
