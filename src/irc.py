@@ -19,7 +19,7 @@ class IrcConnection(trigger, config):
         self.configfile = configfile
         self.read()
         self.command_list = ['001', '002', '003', '004', '005', '250', '251', '252', '253', '254', '255', '265', '266', '372', '375', '376', '404']
-        self.version = "v0.3.5"
+        self.version = "v0.4.0"
         self.connection = None
         self.buffer = ""
         self.last_ping = 0
