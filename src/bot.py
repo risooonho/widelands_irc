@@ -43,7 +43,7 @@ class MyHandler(BaseHTTPRequestHandler):
 def worker():
     irc.loop()
 
-irc = IrcConnection('config.ini')
+irc = IrcConnection('src/config.ini')
 
 t = threading.Thread(target=worker)
 t.start()
