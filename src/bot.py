@@ -5,7 +5,6 @@ import sys
 import threading
 import config
 import hmac
-import hashlib
 from irc import IrcConnection
 
 irc = None
