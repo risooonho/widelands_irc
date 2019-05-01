@@ -144,6 +144,19 @@ def handle_issue(irc, data):
     irc.schedule_message('{} {} {} issue {}: {} ({})'
             .format(repo, user, action, issue_num, title, link))
 
+def handle_issue_comment(irc, data):
+    repo = fmt_repo(data)
+    title = fmt_message(data['issue']['title'])
+    author = colorize(data['sender']['login'], 'bold', 'irc')
+    issue_num = colorize('#' + str(data['issue']['number']), 'bold-blue', 'irc')
+    link = short_gh_link(data['issue']['html_url'])
+
+    irc.schedule_message('{} {} comment issue {}: {} ({})'
+            .format(repo, author, issue_num, title, link))
+    irc.schedule_message('{}'.format(data['comment']['body']))
+
+    print('Issue comment')
+
 def handle_status_event(irc, data):
     if data['state'] == 'success':
         color = 'bold-green'
@@ -206,6 +219,8 @@ def handle_event(irc, event, data):
         handle_pull_request(irc, data)
     elif event == 'issues':
         handle_issue(irc, data)
+    elif event == 'issue_comment':
+        handle_issue_comment(irc, data)
     elif event == 'status':
         handle_status_event(irc, data)
     elif event == 'watch':
