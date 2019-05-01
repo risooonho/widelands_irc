@@ -154,12 +154,13 @@ def handle_issue_comment(irc, data):
     title = fmt_message(data['issue']['title'], MAX_COMMIT_LEN)
     author = colorize(data['sender']['login'], 'bold', 'irc')
     issue_num = colorize('#' + str(data['issue']['number']), 'bold-blue', 'irc')
-    link = short_gh_link(data['issue']['html_url'])
+    issue_link = short_gh_link(data['issue']['html_url'])
+    comment_link = short_gh_link(data['comment']['html_url'])
     message = fmt_message(data['comment']['body'])
 
-    irc.schedule_message('{} {} comment issue {}: {} ({})'
-            .format(repo, author, issue_num, title, link))
-    irc.schedule_message('{}'.format(message))
+    irc.schedule_message('{} {} commented on issue {}: {} ({})'
+            .format(repo, author, issue_num, title, issue_link))
+    irc.schedule_message('{} ({})'.format(message, comment_link))
 
     print('Issue comment')
 
