@@ -17,14 +17,15 @@ MAX_COMMIT_LEN = 70
 def fmt_commit(cmt):
     hsh = colorize(cmt['id'][:10], 'teal', 'irc')
     author = colorize(cmt['author']['name'], 'bold-green', 'irc')
-    message = fmt_message(cmt['message'])
+    message = fmt_message(cmt['message'], MAX_COMMIT_LEN)
 
     return '{} {}: {}'.format(hsh, author, message)
 
-def fmt_message(message):
+def fmt_message(message, message_len=350):
     message = message.replace('\n', ' ')
-    message = message[:MAX_COMMIT_LEN] \
-            + ('..' if len(message) > MAX_COMMIT_LEN else '')
+    message = message.replace('\r', '')
+    message = message[:message_len] \
+            + ('..' if len(message) > message_len else '')
 
     return message
 
@@ -146,14 +147,15 @@ def handle_issue(irc, data):
 
 def handle_issue_comment(irc, data):
     repo = fmt_repo(data)
-    title = fmt_message(data['issue']['title'])
+    title = fmt_message(data['issue']['title'], MAX_COMMIT_LEN)
     author = colorize(data['sender']['login'], 'bold', 'irc')
     issue_num = colorize('#' + str(data['issue']['number']), 'bold-blue', 'irc')
     link = short_gh_link(data['issue']['html_url'])
+    message = fmt_message(data['comment']['body'])
 
     irc.schedule_message('{} {} comment issue {}: {} ({})'
             .format(repo, author, issue_num, title, link))
-    irc.schedule_message('{}'.format(data['comment']['body']))
+    irc.schedule_message('{}'.format(message))
 
     print('Issue comment')
 
@@ -183,7 +185,7 @@ def handle_status_event(irc, data):
             .format(repo_name, befor_id, after_id))
     change = colorize('Change view:', 'teal', 'irc')
     build = colorize('Build details:', 'teal', 'irc')
-    message = fmt_message(data['commit']['commit']['message'])
+    message = fmt_message(data['commit']['commit']['message'], MAX_COMMIT_LEN)
     commit_msg = colorize(message, 'green', 'irc')
     branch = colorize(data['branches'][0]['name'], 'bold-blue', 'irc')
 
