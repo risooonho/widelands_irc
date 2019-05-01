@@ -123,9 +123,11 @@ def handle_pull_request(irc, data):
     pr_num = colorize('#' + str(data['number']), 'bold-blue', 'irc')
     title = data['pull_request']['title']
     link = short_gh_link(data['pull_request']['html_url'])
+    message = fmt_message(data['pull_request']['body'])
 
     irc.schedule_message('{} {} {} pull request {}: {} ({})'
             .format(repo, author, action, pr_num, title, link))
+    irc.schedule_message('{}'.format(message))
 
 
 def handle_issue(irc, data):
