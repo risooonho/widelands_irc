@@ -143,9 +143,11 @@ def handle_issue(irc, data):
     issue_num = colorize('#' + str(data['issue']['number']), 'bold-blue', 'irc')
     title = data['issue']['title']
     link = short_gh_link(data['issue']['html_url'])
+    message = fmt_message(data['issue']['body'])
 
     irc.schedule_message('{} {} {} issue {}: {} ({})'
             .format(repo, user, action, issue_num, title, link))
+    irc.schedule_message('{}'.format(message))
 
 def handle_issue_comment(irc, data):
     repo = fmt_repo(data)
